@@ -1,11 +1,9 @@
-# \[Group name\]
+# \[Assignments in Advanced Macroeconomics: Heterogeneous Agent Models\]
 
-**Group members:**
-- A
-- B
-- C
+**By Johan Ølgaard, jlh601**
 
 This repository contains  
-1. Inaugural project. 
-2. Data project. We fetch data from **source x** on **y** and show that ...
-3. Model project. We model ...
+1. Assignment 1
+2. Assignment 2
+3. Assignment 3
+4. Exam
