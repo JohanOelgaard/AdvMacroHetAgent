@@ -9,30 +9,24 @@ from GEModelTools import lag, lead
 
 
 @nb.njit
-def production_firm(par,ini,ss,Gamma,K,L,rK,w,Y):
+def production_firm(par,ini,ss,Gamma,K,L1,L2,rK,w1,w2,Y):
 
     K_lag = lag(ini.K,K)
 
     # a. implied prices (remember K and L are inputs)
-    rK[:] = par.alpha*Gamma*(K_lag/L)**(par.alpha-1.0)
-    w[:] = (1.0-par.alpha)*Gamma*(K_lag/L)**par.alpha
+    rK[:] = par.alpha*Gamma*K_lag**(par.alpha-1.0)*L1**((1.0-par.alpha)/2.0)*L2**((1.0-par.alpha)/2.0)
+    w1[:] = Gamma*(K_lag)**par.alpha*((1.0-par.alpha)/2.0)*L1**(-(1.0+par.alpha)/2.0)*L2**((1.0-par.alpha)/2.0)
+    w2[:] = Gamma*(K_lag)**par.alpha*L1**((1.0-par.alpha)/2.0)*((1.0-par.alpha)/2.0)*L2**(-(1.0+par.alpha)/2.0)
     
     # b. production and investment
-    Y[:] = Gamma*K_lag**(par.alpha)*L**(1-par.alpha)
+    Y[:] = Gamma*K_lag**(par.alpha)*L1**((1.0-par.alpha)/2.0)*L2**((1.0-par.alpha)/2.0)
+
 
 @nb.njit
-def mutual_fund(par,ini,ss,K,rK,A,r):
+def market_clearing(par,ini,ss,A,A_hh,L1,L1_hh,L2,L2_hh,Y,C_hh,K,I,clearing_A,clearing_L1,clearing_L2,clearing_Y):
 
-    # a. total assets
-    A[:] = K
-
-    # b. return
-    r[:] = rK-par.delta
-
-@nb.njit
-def market_clearing(par,ini,ss,A,A_hh,L,L_hh,Y,C_hh,K,I,clearing_A,clearing_L,clearing_Y):
-
-    clearing_A[:] = A-A_hh
-    clearing_L[:] = L-L_hh
-    I = K-(1-par.delta)*lag(ini.K,K)
-    clearing_Y[:] = Y-C_hh-I
+    clearing_A[:] = K-A_hh #Asset market clearing
+    clearing_L1[:] = L1-L1_hh #Labor market clearing for labor type 1
+    clearing_L2[:] = L2-L2_hh #Labor market clearing for labor type 2
+    I = K-(1-par.delta)*lag(ini.K,K) #Law of motion for capital
+    clearing_Y[:] = Y-C_hh-I #Goods market clearing
