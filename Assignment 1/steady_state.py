@@ -23,20 +23,28 @@ def prepare_hh_ss(model):
     # b. z
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
 
+    # c. beta
+    par.beta_grid[:] = np.array([par.beta_mean-par.sigma_beta,par.beta_mean,par.beta_mean+par.sigma_beta,
+                                par.beta_mean-par.sigma_beta,par.beta_mean,par.beta_mean+par.sigma_beta])
+
+    # e. eta
+    par.eta0_grid[:], par.eta1_grid[:] = np.array([1.0,1.0,1.0,0.0,0.0,0.0]), np.array([0.0,0.0,0.0,1.0,1.0,1.0])
+
     #############################################
     # 2. transition matrix initial distribution #
     #############################################
     
-    ss.z_trans[0,:,:] = z_trans
-    ss.Dbeg[0,:,0] = z_ergodic # ergodic at a_lag = 0.0
-    ss.Dbeg[0,:,1:] = 0.0 # none with a_lag > 0.0
+    for i_fix in range(par.Nfix):
+        ss.z_trans[i_fix,:,:] = z_trans
+        ss.Dbeg[i_fix,:,0] = z_ergodic/par.Nfix # ergodic at a_lag = 0.0
+        ss.Dbeg[i_fix,:,1:] = 0.0 # none with a_lag > 0.0
 
     ################################################
     # 3. initial guess for intertemporal variables #
     ################################################
 
     # a. raw value
-    y = (1-ss.tau)*par.z_grid
+    y = par.z_grid
     c = m = par.a_grid[np.newaxis,:] + y[:,np.newaxis]
     v_a = c**(-par.sigma)
 
@@ -70,11 +78,12 @@ def find_ss(model,tau,do_print=False,pB_min=0.965,pB_max=0.985,Nr=5):
     par = model.par
     ss = model.ss
 
-    assert tau >= par.G_ss, f'tau = {tau} < par.G_ss = {par.G_ss}'
+    #assert tau >= par.G_ss, f'tau = {tau} < par.G_ss = {par.G_ss}'
 
-    # a. government
+    # a. productivity
+    ss.phi0 = par.phi0_ss
+    ss.phi1 = par.phi1_ss
     ss.G = par.G_ss
-    ss.tau = tau
 
     # b. broad search
     if do_print: print(f'### step 1: broad search ###\n')
