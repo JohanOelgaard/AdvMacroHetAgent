@@ -18,7 +18,7 @@ def prepare_hh_ss(model):
     ############
     
     # a. a
-    par.a_grid[:] = equilogspace(0.0,par.a_max,par.Na)
+    par.a_grid[:] = equilogspace(0.0,np.max([ss.w0,ss.w1])*par.a_max,par.Na)
     
     # b. z
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
