@@ -12,11 +12,11 @@ def solve_hh_backwards(par,z_trans,rK,w0,w1,phi0,phi1,vbeg_a_plus,vbeg_a,a,c,l):
         # a. solve step
         for i_z in range(par.Nz):
             
-            # i. Ex post stochastic productity
+            # i. Effective labour supply
             l[i_fix,i_z,:] = par.z_grid[i_z]
 
             # ii. cash-on-hand
-            m = (1+rK-par.delta)*par.a_grid + l[i_fix,i_z,:]*(w0*par.phi0_ss*par.eta0_grid[i_fix] + w1*par.phi1_ss*par.eta1_grid[i_fix])
+            m = (1+rK-par.delta)*par.a_grid + l[i_fix,i_z,:]*(w0*par.phi0*par.eta0_grid[i_fix] + w1*par.phi1*par.eta1_grid[i_fix])
 
             # i. EGM
             c_endo = (par.beta_grid[i_fix]*vbeg_a_plus[i_fix,i_z])**(-1/par.sigma)

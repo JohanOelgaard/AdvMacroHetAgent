@@ -58,8 +58,8 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.sigma_psi = 0.30*(1.0-par.rho_z**2.0)**0.5 # std. of persistent shock
 
         # c. labour productivity
-        par.phi0_ss = 1.0 # productivity of type 0
-        par.phi1_ss = 2.0 # productivity of type 1
+        par.phi0 = 1.0 # productivity of type 0
+        par.phi1 = 2.0 # productivity of type 1
 
         # d. production
         par.Gamma_ss = 1.0 # production function scale parameter

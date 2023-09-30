@@ -60,8 +60,8 @@ def obj_ss(K_ss,model,do_print=False):
     # a. production
     ss.Gamma = par.Gamma_ss # model user choice
     ss.A = ss.K = K_ss
-    ss.L0 = 2/3 # by distribution
-    ss.L1 = 1/3 # by distribution
+    ss.L0 = 2/3#*par.phi0 # by distribution
+    ss.L1 = 1/3#*par.phi1 # by distribution
     ss.Y = ss.Gamma*ss.K**par.alpha*ss.L0**((1-par.alpha)/2)*ss.L1**((1-par.alpha)/2)    
 
     # b. implied prices
@@ -82,8 +82,8 @@ def obj_ss(K_ss,model,do_print=False):
     model.solve_hh_ss(do_print=do_print)
     model.simulate_hh_ss(do_print=do_print)
 
-    # ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
-    # ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
+    ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
+    ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
 
     if do_print: print(f'implied {ss.A_hh = :.4f}')
 
@@ -103,8 +103,8 @@ def find_ss(model,method='direct',do_print=False,K_min=1.0,K_max=10.0,NK=10):
 
     if method == 'direct':
         find_ss_direct(model,do_print=do_print,K_min=K_min,K_max=K_max,NK=NK)
-    elif method == 'indirect':
-        find_ss_indirect(model,do_print=do_print)
+    # elif method == 'indirect':
+    #     find_ss_indirect(model,do_print=do_print)
     else:
         raise NotImplementedError
 
@@ -144,46 +144,47 @@ def find_ss_direct(model,do_print=False,K_min=1.0,K_max=10.0,NK=10):
         varname='K_ss',funcname='A-A_hh'
     )
 
-def find_ss_indirect(model,do_print=False):
-    """ find steady state using indirect method """
+# def find_ss_indirect(model,do_print=False):
+#     """ find steady state using indirect method """
 
-    par = model.par
-    ss = model.ss
+#     par = model.par
+#     ss = model.ss
 
-    # a. exogenous and targets
-    ss.L = 1.0
-    ss.r = par.r_ss_target
-    ss.w = par.w_ss_target
+#     # a. exogenous and targets
+#     ss.L0 = 2/3 # by distribution
+#     ss.L1 = 1/3 # by distribution
+#     ss.r = par.r_ss_target
+#     ss.w = par.w_ss_target
 
-    # b. stock and capital stock from household behavior
-    model.solve_hh_ss(do_print=do_print) # give us ss.a and ss.c (steady state policy functions)
-    model.simulate_hh_ss(do_print=do_print) # give us ss.D (steady state distribution)
-    if do_print: print('')
+#     # b. stock and capital stock from household behavior
+#     model.solve_hh_ss(do_print=do_print) # give us ss.a and ss.c (steady state policy functions)
+#     model.simulate_hh_ss(do_print=do_print) # give us ss.D (steady state distribution)
+#     if do_print: print('')
 
-    ss.K = ss.A = ss.A_hh # = np.sum(ss.a*ss.D) # calculated in model.simulate_hh_ss
+#     ss.K = ss.A = ss.A_hh # = np.sum(ss.a*ss.D) # calculated in model.simulate_hh_ss
     
-    # c. back technology and depreciation rate
-    ss.Gamma = ss.w / ((1-par.alpha)*(ss.K/ss.L)**par.alpha)
-    ss.rK = par.alpha*ss.Gamma*(ss.K/ss.L)**(par.alpha-1)
-    par.delta = ss.rK - ss.r
-    ss.I = par.delta*ss.K
+#     # c. back technology and depreciation rate
+#     ss.Gamma = ss.w / ((1-par.alpha)*(ss.K/ss.L)**par.alpha)
+#     ss.rK = par.alpha*ss.Gamma*(ss.K/ss.L)**(par.alpha-1)
+#     par.delta = ss.rK - ss.r
+#     ss.I = par.delta*ss.K
 
-    # d. remaining
-    ss.Y = ss.Gamma*ss.K**par.alpha*ss.L**(1-par.alpha)
-    # ss.C_hh = np.sum(ss.D*ss.c)  # calculated in model.simulate_hh_ss
-    # ss.L_hh = np.sum(ss.D*ss.l)  # calculated in model.simulate_hh_ss
+#     # d. remaining
+#     ss.Y = ss.Gamma*ss.K**par.alpha*ss.L**(1-par.alpha)
+#     # ss.C_hh = np.sum(ss.D*ss.c)  # calculated in model.simulate_hh_ss
+#     # ss.L_hh = np.sum(ss.D*ss.l)  # calculated in model.simulate_hh_ss
 
-    ss.clearing_A = ss.A-ss.A_hh
-    ss.clearing_L = ss.L-ss.L_hh
-    ss.clearing_Y = ss.Y-ss.C_hh-ss.I
+#     ss.clearing_A = ss.A-ss.A_hh
+#     ss.clearing_L = ss.L-ss.L_hh
+#     ss.clearing_Y = ss.Y-ss.C_hh-ss.I
     
-    # e. print
-    if do_print:
+#     # e. print
+#     if do_print:
 
-        print(f'Implied K = {ss.K:6.3f}')
-        print(f'Implied Y = {ss.Y:6.3f}')
-        print(f'Implied Gamma = {ss.Gamma:6.3f}')
-        print(f'Implied delta = {par.delta:6.3f}')
-        print(f'Implied K/Y = {ss.K/ss.Y:6.3f}') 
-        print(f'Discrepancy in K-A_hh = {ss.K-ss.A_hh:12.8f}') # = 0 by construction
-        print(f'Discrepancy in Y-L_hh-I = {ss.Y-ss.C_hh-ss.I:12.8f}\n') # != 0 due to numerical error 
+#         print(f'Implied K = {ss.K:6.3f}')
+#         print(f'Implied Y = {ss.Y:6.3f}')
+#         print(f'Implied Gamma = {ss.Gamma:6.3f}')
+#         print(f'Implied delta = {par.delta:6.3f}')
+#         print(f'Implied K/Y = {ss.K/ss.Y:6.3f}') 
+#         print(f'Discrepancy in K-A_hh = {ss.K-ss.A_hh:12.8f}') # = 0 by construction
+#         print(f'Discrepancy in Y-L_hh-I = {ss.Y-ss.C_hh-ss.I:12.8f}\n') # != 0 due to numerical error 
