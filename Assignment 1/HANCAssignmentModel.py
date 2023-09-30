@@ -62,7 +62,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.phi1_ss = 2.0 # productivity of type 1
 
         # d. production
-        par.G_ss = 1 # production function scale parameter
+        par.Gamma_ss = 1.0 # production function scale parameter
         par.alpha = 0.36 # capital share
         par.delta = 0.10 # depreciation rate
 

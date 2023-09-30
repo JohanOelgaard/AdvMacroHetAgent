@@ -15,8 +15,8 @@ def production_firm(par,ini,ss,Gamma,K,L0,L1,rK,w0,w1,Y):
 
     # a. implied prices (remember K and L are inputs)
     rK[:] = par.alpha*Gamma*K_lag**(par.alpha-1.0)*L0**((1.0-par.alpha)/2.0)*L1**((1.0-par.alpha)/2.0)
-    w0[:] = Gamma*(K_lag)**par.alpha*((1.0-par.alpha)/2.0)*L0**(-(1.0+par.alpha)/2.0)*L1**((1.0-par.alpha)/2.0)
-    w1[:] = Gamma*(K_lag)**par.alpha*L0**((1.0-par.alpha)/2.0)*((1.0-par.alpha)/2.0)*L1**(-(1.0+par.alpha)/2.0)
+    w0[:] = Gamma*(K_lag)**par.alpha*((1.0-par.alpha)/2.0)*L0**(((1.0-par.alpha)/2.0)-1)*L1**((1.0-par.alpha)/2.0)
+    w1[:] = Gamma*(K_lag)**par.alpha*((1.0-par.alpha)/2.0)*L1**(((1.0-par.alpha)/2.0)-1)*L0**((1.0-par.alpha)/2.0)
     
     # b. production and investment
     Y[:] = Gamma*K_lag**(par.alpha)*L0**((1.0-par.alpha)/2.0)*L1**((1.0-par.alpha)/2.0)
