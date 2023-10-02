@@ -24,9 +24,10 @@ def prepare_hh_ss(model):
     # c. z
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
 
-
-    # Types
+    # d. beta
     par.beta_grid[:] = np.repeat(np.array([par.beta_mean-par.beta_delta, par.beta_mean, par.beta_mean+par.beta_delta]),3)
+    
+    # e. j
     par.j_grid[:] = np.tile(np.array([0,0,1]),3)
 
     #############################################
@@ -63,9 +64,9 @@ def obj_ss(K_ss,model,do_print=False):
     # a. production
     #ss.Gamma = par.Gamma_ss # model user choice
     ss.A = ss.K = K_ss 
-    ss.phi_0 = 1.0
-    L0 = 2/3 * ss.phi_0
-    L1 = 1/3 * ss.phi_1
+    ss.phi0 = 1.0
+    L0 = 2/3 * ss.phi0
+    L1 = 1/3 * ss.phi1
     ss.L = L0 + L1
 
     ss.Y = par.Gamma_ss*ss.K**par.alpha*L0**((1-par.alpha)/2)*L1**((1-par.alpha)/2) 

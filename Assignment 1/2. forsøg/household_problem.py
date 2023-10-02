@@ -4,7 +4,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit(parallel=True)        
-def solve_hh_backwards(par,z_trans,rK,w0, w1, phi_0, phi_1, vbeg_a_plus,vbeg_a,a,c,l):
+def solve_hh_backwards(par,z_trans,rK,w0, w1, phi0, phi1, vbeg_a_plus,vbeg_a,a,c,l):
     """ solve backwards with vbeg_a from previous iteration (here vbeg_a_plus) """
 
     for i_fix in nb.prange(par.Nfix):
@@ -16,10 +16,10 @@ def solve_hh_backwards(par,z_trans,rK,w0, w1, phi_0, phi_1, vbeg_a_plus,vbeg_a,a
 
             if j == 0:
                 w = w0
-                phi = phi_0
+                phi = phi0
             else:
                 w = w1
-                phi = phi_1
+                phi = phi1
 
             ## i. labor supply
             l[i_fix,i_z,:] = par.z_grid[i_z]*phi
