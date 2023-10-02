@@ -4,7 +4,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit(parallel=True)        
-def solve_hh_backwards(par,z_trans,r,w0, w1, phi_0, phi_1, vbeg_a_plus,vbeg_a,a,c,l):
+def solve_hh_backwards(par,z_trans,rK,w0, w1, phi_0, phi_1, vbeg_a_plus,vbeg_a,a,c,l):
     """ solve backwards with vbeg_a from previous iteration (here vbeg_a_plus) """
 
     for i_fix in nb.prange(par.Nfix):
@@ -24,7 +24,7 @@ def solve_hh_backwards(par,z_trans,r,w0, w1, phi_0, phi_1, vbeg_a_plus,vbeg_a,a,
             ## i. labor supply
             l[i_fix,i_z,:] = par.z_grid[i_z]*phi
             ## ii. cash-on-hand
-            m = (1+r)*par.a_grid + w*l[i_fix,i_z,:]
+            m = (1.0+rK-par.delta)*par.a_grid + w*l[i_fix,i_z,:]
             # iii. EGM
             c_endo = (beta*vbeg_a_plus[i_fix,i_z])**(-1/par.sigma)
             m_endo = c_endo + par.a_grid # current consumption + end-of-period assets
@@ -36,7 +36,7 @@ def solve_hh_backwards(par,z_trans,r,w0, w1, phi_0, phi_1, vbeg_a_plus,vbeg_a,a,
 
 
         # b. expectation step
-        v_a = (1+r)*c[i_fix]**(-par.sigma)
+        v_a = (1.0+rK-par.delta)*c[i_fix]**(-par.sigma)
         vbeg_a[i_fix] = z_trans[i_fix]@v_a
 
                 # # alternatively we write the matrix multiplication as a loop 

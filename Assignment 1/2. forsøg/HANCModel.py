@@ -25,7 +25,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['r','w0', 'w1', 'phi_0', 'phi_1'] # direct inputs
+        self.inputs_hh = ['rK','w0', 'w1', 'phi_0', 'phi_1'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs (not used today)
         self.outputs_hh = ['a','c','l'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
@@ -36,7 +36,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         self.targets = ['clearing_A'] # , 'clearing_L' targets = 0 
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',
-            'blocks.mutual_fund',
+            #'blocks.mutual_fund',
             'hh', # household block
             'blocks.market_clearing']
         
@@ -51,13 +51,11 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.Nfix = 9 # number of fixed discrete states (here beta and productivity type)
         par.Nz = 7 # number of stochastic discrete states (here productivity)
 
-
-
         # a. preferences
-        par.sigma = 2.0 # CRRA coefficient
         par.beta_mean = 0.975 # discount factor, mean, range is [mean-width,mean+width]
-        par.beta_delta = 0.010 # discount factor, width, range is [mean-width,mean+width]
-        par.v = 0.50
+        par.beta_delta = 0.01 # discount factor, width, range is [mean-width,mean+width]
+        par.sigma = 2.0 # CRRA coefficient
+        par.nu = 0.50
         par.epsilon = 1.0
 
         # b. income parameters
@@ -85,13 +83,6 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.simT = 2_000 # length of simulation 
         par.tol_broyden = 1e-10 # tolerance when solving eq. system
 
-        # Types
-        b1 = par.beta_mean-par.beta_delta
-        b2 = par.beta_mean
-        b3 = par.beta_mean+par.beta_delta
-        par.beta_grid = np.array([b1, b1, b1, b2, b2, b2, b3, b3, b3])
-        par.j_grid = np.array([0,0,1,0,0,1,0,0,1])
-
         par.py_hh = False # call solve_hh_backwards in Python-model
         par.py_block = True # call blocks in Python-model
         par.full_z_trans = False # let z_trans vary over endogenous states
@@ -102,6 +93,11 @@ class HANCModelClass(EconModelClass,GEModelClass):
         """ allocate model """
 
         par = self.par
+
+        # a. grids
+        par.Nbeta = par.Nfix
+        par.beta_grid = np.zeros(par.Nbeta)
+        par.j_grid = np.zeros(par.Nfix)
 
         # b. solution
         self.allocate_GE() # should always be called here

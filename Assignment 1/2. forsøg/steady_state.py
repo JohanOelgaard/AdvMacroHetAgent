@@ -24,6 +24,11 @@ def prepare_hh_ss(model):
     # c. z
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
 
+
+    # Types
+    par.beta_grid[:] = np.repeat(np.array([par.beta_mean-par.beta_delta, par.beta_mean, par.beta_mean+par.beta_delta]),3)
+    par.j_grid[:] = np.tile(np.array([0,0,1]),3)
+
     #############################################
     # 2. transition matrix initial distribution #
     #############################################
@@ -43,8 +48,8 @@ def prepare_hh_ss(model):
     
     # a. raw value
     y = par.z_grid
-    c = m = (1+ss.r)*par.a_grid[np.newaxis,:] + y[:,np.newaxis]
-    v_a = (1+ss.r)*c**(-par.sigma)
+    c = m = (1+ss.rK-par.delta)*par.a_grid[np.newaxis,:] + y[:,np.newaxis]
+    v_a = (1+ss.rK-par.delta)*c**(-par.sigma)
 
     # b. expectation
     ss.vbeg_a[:] = ss.z_trans@v_a
@@ -56,27 +61,26 @@ def obj_ss(K_ss,model,do_print=False):
     ss = model.ss
 
     # a. production
-    Gamma = par.Gamma_ss # model user choice
+    #ss.Gamma = par.Gamma_ss # model user choice
     ss.A = ss.K = K_ss 
     ss.phi_0 = 1.0
     L0 = 2/3 * ss.phi_0
     L1 = 1/3 * ss.phi_1
     ss.L = L0 + L1
 
-    ss.Y = Gamma*ss.K**par.alpha*L0**((1-par.alpha)/2)*L1**((1-par.alpha)/2) 
+    ss.Y = par.Gamma_ss*ss.K**par.alpha*L0**((1-par.alpha)/2)*L1**((1-par.alpha)/2) 
 
 
     # b. implied prices
-    ss.rK = par.alpha * Gamma * ss.K**(par.alpha-1) * L0**((1-par.alpha)/2)*L1**((1-par.alpha)/2) 
-    ss.r = ss.rK - par.delta
-    ss.w0 = (1.0-par.alpha)/2*Gamma*ss.K**par.alpha*L1**((1-par.alpha)/2)*L0**((1-par.alpha)/2-1)
-    ss.w1 = (1.0-par.alpha)/2*Gamma*ss.K**par.alpha*L1**((1-par.alpha)/2-1)*L0**((1-par.alpha)/2)
+    ss.rK = par.alpha * par.Gamma_ss * ss.K**(par.alpha-1) * L0**((1-par.alpha)/2)*L1**((1-par.alpha)/2) 
+    ss.w0 = (1.0-par.alpha)/2*par.Gamma_ss*ss.K**par.alpha*L1**((1-par.alpha)/2)*L0**((1-par.alpha)/2-1)
+    ss.w1 = (1.0-par.alpha)/2*par.Gamma_ss*ss.K**par.alpha*L1**((1-par.alpha)/2-1)*L0**((1-par.alpha)/2)
 
     # c. household behavior
     if do_print:
 
         print(f'guess {ss.K = :.4f}')    
-        print(f'implied {ss.r = :.4f}')
+        print(f'implied {ss.rK = :.4f}')
         print(f'implied {ss.w1 = :.4f}')
         print(f'implied {ss.w0 = :.4f}')
 
@@ -103,8 +107,8 @@ def find_ss(model,method='direct',do_print=False,K_min=1.0,K_max=10.0,NK=10):
 
     if method == 'direct':
         find_ss_direct(model,do_print=do_print,K_min=K_min,K_max=K_max,NK=NK)
-    elif method == 'indirect':
-        find_ss_indirect(model,do_print=do_print)
+    # elif method == 'indirect':
+    #     find_ss_indirect(model,do_print=do_print)
     else:
         raise NotImplementedError
 

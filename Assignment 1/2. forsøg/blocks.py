@@ -23,20 +23,23 @@ def production_firm(par,ini,ss,K, phi_0, phi_1 ,rK,w0, w1,Y,L):
     # b. production and investment
     Y[:] = Gamma *K_lag**(par.alpha)*L0**((1-par.alpha)/2)*L1**((1-par.alpha)/2)
     L[:] = L0+L1
+    
+# @nb.njit
+# def mutual_fund(par,ini,ss,K,rK,A,r):
 
-@nb.njit
-def mutual_fund(par,ini,ss,K,rK,A,r):
+#     # a. total assets
+#     A[:] = K
 
-    # a. total assets
-    A[:] = K
-
-    # b. return
-    r[:] = rK-par.delta
+#     # b. return
+#     r[:] = rK-par.delta
 
 @nb.njit
 def market_clearing(par,ini,ss,A,A_hh,L,L_hh,Y,C_hh,K,I,clearing_A,clearing_L,clearing_Y):
+    # a. total assets
+    A[:] = K
 
+    # b. clearing
     clearing_A[:] = A-A_hh
     clearing_L[:] = L-L_hh
-    I = K-(1-par.delta)*lag(ini.K,K)
+    I = K-(1.0-par.delta)*lag(ini.K,K)
     clearing_Y[:] = Y-C_hh-I
