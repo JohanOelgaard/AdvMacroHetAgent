@@ -60,8 +60,9 @@ def obj_ss(K_ss,model,do_print=False):
     # a. production
     ss.Gamma = par.Gamma_ss # model user choice
     ss.A = ss.K = K_ss
-    ss.L0 = 2/3#*par.phi0 # by distribution
-    ss.L1 = 1/3#*par.phi1 # by distribution
+    ss.L0 = 2/3*par.phi0 # by distribution
+    ss.L1 = 1/3*par.phi1 # by distribution
+    ss.L = ss.L0 + ss.L1
     ss.Y = ss.Gamma*ss.K**par.alpha*ss.L0**((1-par.alpha)/2)*ss.L1**((1-par.alpha)/2)    
 
     # b. implied prices
@@ -89,8 +90,10 @@ def obj_ss(K_ss,model,do_print=False):
 
     # d. market clearing
     ss.clearing_A = ss.A - ss.A_hh
-    ss.clearing_L0 = ss.L0-ss.L0_hh
-    ss.clearing_L1 = ss.L1-ss.L1_hh
+    # ss.clearing_L0 = ss.L0-ss.L0_hh
+    # ss.clearing_L1 = ss.L1-ss.L1_hh
+    # ss.clearing_L = ss.L-ss.L0_hh-ss.L1_hh
+    ss.clearing_L = ss.L-ss.L_hh
     ss.I = ss.K - (1-par.delta)*ss.K
     ss.clearing_Y = ss.Y - ss.C_hh - ss.I
 

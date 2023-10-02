@@ -23,13 +23,13 @@ def production_firm(par,ini,ss,Gamma,K,L0,L1,rK,w0,w1,Y):
 
 
 @nb.njit
-def market_clearing(par,ini,ss,A,A_hh,L0,L0_hh,L1,L1_hh,Y,C_hh,K,I,clearing_A,clearing_L0,clearing_L1,clearing_L,clearing_Y):
+def market_clearing(par,ini,ss,A,A_hh,L0,L0_hh,L1,L1_hh,L,L_hh,Y,C_hh,K,I,clearing_A,clearing_L0,clearing_L1,clearing_L,clearing_Y):
 
     L = L0+L1
 
     clearing_A[:] = K-A_hh #Asset market clearing
     # clearing_L0[:] = L0-L0_hh #Labor market clearing for labor type 1
     # clearing_L1[:] = L1-L1_hh #Labor market clearing for labor type 2
-    clearing_L[:] = L-L0_hh-L1_hh #Labor market clearing for labor type 2
+    clearing_L[:] = L-L_hh #Labor market clearing for labor type 2
     I = K-(1-par.delta)*lag(ini.K,K) #Law of motion for capital
     clearing_Y[:] = Y-C_hh-I #Goods market clearing

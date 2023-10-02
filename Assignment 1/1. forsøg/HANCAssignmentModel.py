@@ -21,13 +21,13 @@ class HANCModelClass(EconModelClass,GEModelClass):
         self.pols_hh = ['a'] # policy functions
         self.inputs_hh = ['rK','w0','w1','phi0','phi1'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs (not used today)
-        self.outputs_hh = ['a','c','l0','l1'] # outputs
+        self.outputs_hh = ['a','c','l'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
-        self.shocks = ['phi0','phi1'] # exogenous shocks
-        self.unknowns = ['rK','w0','w1'] # endogenous unknowns
-        self.targets = [] # targets = 0 (not used today)
+        self.shocks = ['phi1'] # exogenous shocks
+        self.unknowns = ['K'] # endogenous unknowns
+        self.targets = ['clearing_A'] # targets = 0 (not used today)
 
         # d. all variables
         self.blocks = [ # list of strings to block-functions
@@ -44,11 +44,12 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par = self.par
 
         par.Nfix = 6 # number of fixed discrete states (none here)
+        #par.Nfix = 9 # number of fixed discrete states (none here)
         par.Nz = 7 # number of stochastic discrete states (here productivity)
 
         # a. preferences
         par.beta_mean = 0.975 # discount factor
-        par.sigma_beta = 0.001 # half width of beta grid
+        par.sigma_beta = 0.010 # half width of beta grid
         par.sigma = 2.0 # CRRA coefficient
         par.nu = 0.5 # disutility of labor factor NB not relevant
         par.epsilon = 1.0 # disutility of labor factor NB not relevant
