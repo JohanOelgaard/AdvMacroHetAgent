@@ -14,7 +14,7 @@ def production_firm(par,ini,ss,Gamma,K,L0,L1,rK,w0,w1,Y):
     K_lag = lag(ini.K,K)
 
     # a. implied prices (remember K and L are inputs)
-    rK[:] = par.alpha * Gamma * K_lag**(par.alpha-1.0) * L0**((1.0-par.alpha)/2.0) * L1**((1.0-par.alpha)/2.0)
+    rK[:] = par.alpha * Gamma * K_lag**(par.alpha-1.0) *L0**((1.0-par.alpha)/2.0) * L1**((1.0-par.alpha)/2.0)
     w0[:] = Gamma * (K_lag)**par.alpha * ((1.0-par.alpha)/2.0) * L0**(((1.0-par.alpha)/2.0)-1) * L1**((1.0-par.alpha)/2.0)
     w1[:] = Gamma * (K_lag)**par.alpha * ((1.0-par.alpha)/2.0) * L1**(((1.0-par.alpha)/2.0)-1) * L0**((1.0-par.alpha)/2.0)
     
@@ -29,7 +29,7 @@ def mutual_fund(par,ini,ss,K,rK,A,r):
     r[:] = rK - par.delta
 
 @nb.njit
-def market_clearing(par,ini,ss,A,A_hh,L0,L0_hh,L1,L1_hh,Y,C_hh,K,I,clearing_A,clearing_L0,clearing_L1,clearing_L,clearing_Y):
+def market_clearing(par,ini,ss,A,A_hh,L0,L0_hh,L1,L1_hh,Y,C_hh,K,I,clearing_A,clearing_L0,clearing_L1,clearing_Y):
 
     clearing_A[:] = K-A_hh #Asset market clearing
     clearing_L0[:] = L0-L0_hh #Labor market clearing for labor type 1

@@ -24,7 +24,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # c. GE
         self.shocks = ['phi1'] # exogenous shocks
-        self.unknowns = ['K','L0','L1'] # endogenous unknowns
+        self.unknowns = ['K'] # endogenous unknowns
         # self.unknowns = ['L0', 'L1'] # endogenous unknowns (not used today)
         self.targets = ['clearing_A'] # targets = 0 (not used today)
         # self.targets = ['clearing_L1'] # targets = 0 (not used today)

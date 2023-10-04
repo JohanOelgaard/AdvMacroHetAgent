@@ -44,7 +44,7 @@ def prepare_hh_ss(model):
             ss.z_trans[i_fix,:,:] = z_trans
             ss.Dbeg[i_fix,:,0] = (z_ergodic/9) #par.Nfix # ergodic at a_lag = 0.0
             ss.Dbeg[i_fix,:,1:] = 0.0 # none with a_lag > 0.0
-
+            
     ################################################
     # 3. initial guess for intertemporal variables #
     ################################################
@@ -55,7 +55,7 @@ def prepare_hh_ss(model):
     v_a = (1+ss.r) * c**(-par.sigma)
 
     # b. expectation
-    ss.vbeg_a[:] = ss.z_trans@v_a
+    ss.vbeg_a[:] = ss.z_trans @ v_a
     
 def obj_ss(K_ss,model,do_print=False):
     """ objective when solving for steady state capital """
@@ -73,7 +73,6 @@ def obj_ss(K_ss,model,do_print=False):
     # b. implied prices
     ss.rK = par.alpha*ss.Gamma*ss.K**(par.alpha-1.0)*ss.L0**((1-par.alpha)/2)*ss.L1**((1-par.alpha)/2)    
     ss.r = ss.rK - par.delta
-    #ss.w0 = (1.0-par.alpha)*ss.Gamma*(ss.K/ss.L)**par.alpha
     ss.w0 = ss.Gamma*(ss.K)**par.alpha*((1.0-par.alpha)/2.0)*ss.L0**(((1.0-par.alpha)/2.0)-1)*ss.L1**((1.0-par.alpha)/2.0)
     ss.w1 = ss.Gamma*(ss.K)**par.alpha*((1.0-par.alpha)/2.0)*ss.L1**(((1.0-par.alpha)/2.0)-1)*ss.L0**((1.0-par.alpha)/2.0)
 
@@ -88,8 +87,8 @@ def obj_ss(K_ss,model,do_print=False):
     model.solve_hh_ss(do_print=do_print)
     model.simulate_hh_ss(do_print=do_print)
 
-    ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
-    ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
+    # ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
+    # ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss
 
     if do_print: print(f'implied {ss.A_hh = :.4f}')
 
