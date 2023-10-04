@@ -13,25 +13,26 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # a. namespaces (typically not changed)
         self.namespaces = ['par','ini','ss','path','sim']
-
-        # not used today: .sim and .path
         
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['rK','w0','w1','phi0','phi1'] # direct inputs
+        self.inputs_hh = ['r','w0','w1','phi0','phi1'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs (not used today)
-        self.outputs_hh = ['a','c','l'] # outputs
+        self.outputs_hh = ['a','c','l0','l1'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
         self.shocks = ['phi1'] # exogenous shocks
-        self.unknowns = ['K'] # endogenous unknowns
+        self.unknowns = ['K','L0','L1'] # endogenous unknowns
+        # self.unknowns = ['L0', 'L1'] # endogenous unknowns (not used today)
         self.targets = ['clearing_A'] # targets = 0 (not used today)
+        # self.targets = ['clearing_L1'] # targets = 0 (not used today)
 
         # d. all variables
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',
+            'blocks.mutual_fund',
             'hh', # household block
             'blocks.market_clearing']
 
@@ -44,7 +45,6 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par = self.par
 
         par.Nfix = 6 # number of fixed discrete states (none here)
-        #par.Nfix = 9 # number of fixed discrete states (none here)
         par.Nz = 7 # number of stochastic discrete states (here productivity)
 
         # a. preferences
@@ -78,9 +78,13 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.tol_solve = 1e-12 # tolerance when solving household problem
         par.tol_simulate = 1e-12 # tolerance when simulating household problem
 
-        # for transition path
+        # h. for transition path
         par.max_iter_broyden = 100 # maximum number of iteration when solving eq. system
         par.tol_broyden = 1e-10 # tolerance when solving eq. system
+
+        # i. initial distribution
+        par.chi0 = 2/3
+        par.chi1 = 1/3
           
     def allocate(self):
         """ allocate model """

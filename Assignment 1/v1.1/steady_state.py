@@ -18,26 +18,32 @@ def prepare_hh_ss(model):
     ############
     
     # a. a
-    par.a_grid[:] = equilogspace(0.0,np.max([ss.w0,ss.w1])*par.a_max,par.Na)
-    
+    par.a_grid[:] = equilogspace(0.0,par.a_max,par.Na)
+    # par.a_grid[:] = equilogspace(0.0,np.max([ss.w0,ss.w1])*par.a_max,par.Na)
+
     # b. z
     par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
 
     # c. beta
-    par.beta_grid[:] = np.array([par.beta_mean-par.sigma_beta,par.beta_mean,par.beta_mean+par.sigma_beta,
-                                par.beta_mean-par.sigma_beta,par.beta_mean,par.beta_mean+par.sigma_beta])
+    par.beta_grid[:] = np.tile(np.array([par.beta_mean-par.sigma_beta,par.beta_mean,par.beta_mean+par.sigma_beta]),2)
 
     # e. eta
-    par.eta0_grid[:], par.eta1_grid[:] = np.array([1.0,1.0,1.0,0.0,0.0,0.0]), np.array([0.0,0.0,0.0,1.0,1.0,1.0])
+    par.eta0_grid[:] = np.repeat(np.array([1.0,0.0]),3) # grid for labor type 0
+    par.eta1_grid[:] = np.repeat(np.array([0.0,1.0]),3) # grid for labor type 1
 
     #############################################
     # 2. transition matrix initial distribution #
     #############################################
     
     for i_fix in range(par.Nfix):
-        ss.z_trans[i_fix,:,:] = z_trans
-        ss.Dbeg[i_fix,:,0] = z_ergodic/par.Nfix # ergodic at a_lag = 0.0
-        ss.Dbeg[i_fix,:,1:] = 0.0 # none with a_lag > 0.0
+        if i_fix < 3:
+            ss.z_trans[i_fix,:,:] = z_trans
+            ss.Dbeg[i_fix,:,0] = (2*z_ergodic/9) #par.Nfix # ergodic at a_lag = 0.0
+            ss.Dbeg[i_fix,:,1:] = 0.0 # none with a_lag > 0.0
+        else:
+            ss.z_trans[i_fix,:,:] = z_trans
+            ss.Dbeg[i_fix,:,0] = (z_ergodic/9) #par.Nfix # ergodic at a_lag = 0.0
+            ss.Dbeg[i_fix,:,1:] = 0.0 # none with a_lag > 0.0
 
     ################################################
     # 3. initial guess for intertemporal variables #
@@ -45,8 +51,8 @@ def prepare_hh_ss(model):
 
     # a. raw value
     y = par.z_grid
-    c = m = par.a_grid[np.newaxis,:] + y[:,np.newaxis]
-    v_a = c**(-par.sigma)
+    c = m = (1+ss.r) * par.a_grid[np.newaxis,:] + y[:,np.newaxis]
+    v_a = (1+ss.r) * c**(-par.sigma)
 
     # b. expectation
     ss.vbeg_a[:] = ss.z_trans@v_a
@@ -60,14 +66,13 @@ def obj_ss(K_ss,model,do_print=False):
     # a. production
     ss.Gamma = par.Gamma_ss # model user choice
     ss.A = ss.K = K_ss
-    ss.L0 = 2/3*par.phi0 # by distribution
-    ss.L1 = 1/3*par.phi1 # by distribution
-    ss.L = ss.L0 + ss.L1
+    ss.L0 = par.chi0*par.phi0 # by distribution
+    ss.L1 = par.chi1*par.phi1 # by distribution
     ss.Y = ss.Gamma*ss.K**par.alpha*ss.L0**((1-par.alpha)/2)*ss.L1**((1-par.alpha)/2)    
 
     # b. implied prices
     ss.rK = par.alpha*ss.Gamma*ss.K**(par.alpha-1.0)*ss.L0**((1-par.alpha)/2)*ss.L1**((1-par.alpha)/2)    
-    #ss.r = ss.rK - par.delta
+    ss.r = ss.rK - par.delta
     #ss.w0 = (1.0-par.alpha)*ss.Gamma*(ss.K/ss.L)**par.alpha
     ss.w0 = ss.Gamma*(ss.K)**par.alpha*((1.0-par.alpha)/2.0)*ss.L0**(((1.0-par.alpha)/2.0)-1)*ss.L1**((1.0-par.alpha)/2.0)
     ss.w1 = ss.Gamma*(ss.K)**par.alpha*((1.0-par.alpha)/2.0)*ss.L1**(((1.0-par.alpha)/2.0)-1)*ss.L0**((1.0-par.alpha)/2.0)
@@ -76,7 +81,7 @@ def obj_ss(K_ss,model,do_print=False):
     if do_print:
 
         print(f'guess {ss.K = :.4f}')    
-        print(f'implied {ss.rK = :.4f}')
+        print(f'implied {ss.r = :.4f}')
         print(f'implied {ss.w0 = :.4f}')
         print(f'implied {ss.w1 = :.4f}')
 
@@ -90,10 +95,8 @@ def obj_ss(K_ss,model,do_print=False):
 
     # d. market clearing
     ss.clearing_A = ss.A - ss.A_hh
-    # ss.clearing_L0 = ss.L0-ss.L0_hh
-    # ss.clearing_L1 = ss.L1-ss.L1_hh
-    # ss.clearing_L = ss.L-ss.L0_hh-ss.L1_hh
-    ss.clearing_L = ss.L-ss.L_hh
+    ss.clearing_L0 = ss.L0-ss.L0_hh
+    ss.clearing_L1 = ss.L1-ss.L1_hh
     ss.I = ss.K - (1-par.delta)*ss.K
     ss.clearing_Y = ss.Y - ss.C_hh - ss.I
 

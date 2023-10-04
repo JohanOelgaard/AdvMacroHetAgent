@@ -4,7 +4,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit(parallel=True)        
-def solve_hh_backwards(par,z_trans,rK,w0,w1,phi0,phi1,vbeg_a_plus,vbeg_a,a,c,l):
+def solve_hh_backwards(par,z_trans,r,w0,w1,phi0,phi1,vbeg_a_plus,vbeg_a,a,c,l0,l1):
     """ solve backwards with vbeg_a from previous iteration (here vbeg_a_plus) """
 
     for i_fix in nb.prange(par.Nfix):
@@ -13,12 +13,12 @@ def solve_hh_backwards(par,z_trans,rK,w0,w1,phi0,phi1,vbeg_a_plus,vbeg_a,a,c,l):
         for i_z in range(par.Nz):
             
             # i. Effective labour supply
-            l[i_fix,i_z,:] = par.z_grid[i_z] * (par.phi0 * par.eta0_grid[i_fix] + par.phi1 * par.eta1_grid[i_fix])
-            #l1[i_fix,i_z,:] = par.z_grid[i_z]*par.phi1*par.eta1_grid[i_fix]
+            l0[i_fix,i_z,:] = par.eta0_grid[i_fix] * phi0 * par.z_grid[i_z] # labor supply type 0
+            l1[i_fix,i_z,:] = par.eta1_grid[i_fix] * phi1 * par.z_grid[i_z]
 
             # ii. cash-on-hand
-            # m = (1+rK-par.delta)*par.a_grid + l0[i_fix,i_z,:]*w0 + l1[i_fix,i_z,:]*w1
-            m = (1+rK-par.delta)*par.a_grid + l[i_fix,i_z,:] * (w0 + w1)
+            # m = (1+r)*par.a_grid + l0[i_fix,i_z,:]*w0 + l1[i_fix,i_z,:]*w1
+            m = (1+r) * par.a_grid + w0*l0[i_fix,i_z,:] + w1*l1[i_fix,i_z,:]
 
             # i. EGM
             c_endo = (par.beta_grid[i_fix]*vbeg_a_plus[i_fix,i_z])**(-1/par.sigma)
@@ -33,7 +33,7 @@ def solve_hh_backwards(par,z_trans,rK,w0,w1,phi0,phi1,vbeg_a_plus,vbeg_a,a,c,l):
             
 
         # b. expectation step
-        v_a = (1+rK-par.delta)*c[i_fix]**(-par.sigma)
+        v_a = (1+r) * c[i_fix]**(-par.sigma)
         vbeg_a[i_fix] = z_trans[i_fix]@v_a
 
         #     if j == 0:
