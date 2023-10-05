@@ -11,6 +11,7 @@ from GEModelTools import lag, lead
 @nb.njit
 def production_firm(par,ini,ss,Gamma,K,phi1,L0,L1,rK,w0,w1,Y):
 
+    # defining lagged K, L1, and Gamma
     K_lag = lag(ini.K,K)
     L1 = par.chi1*phi1
     Gamma = par.Gamma_ss
@@ -23,19 +24,12 @@ def production_firm(par,ini,ss,Gamma,K,phi1,L0,L1,rK,w0,w1,Y):
     # b. production and investment
     Y[:] = Gamma * K_lag**(par.alpha) * L0**((1.0-par.alpha)/2.0) * L1**((1.0-par.alpha)/2.0)
 
-# @nb.njit
-# def mutual_fund(par,ini,ss,K,rK,A,r):
-#     # a. total assets
-#     A[:] = K
-#     # b. return
-#     r[:] = rK - par.delta
-
 @nb.njit
 def market_clearing(par,ini,ss,A,A_hh,L0,L0_hh,L1,L1_hh,Y,C_hh,K,I,clearing_A,clearing_L0,clearing_L1,clearing_Y):
-    #total assets
+    # total assets equal to capital
     A[:] = K
 
-    # clearing
+    # clearing conditions
     clearing_A[:] = K-A_hh #Asset market clearing
     clearing_L0[:] = L0-L0_hh #Labor market clearing for labor type 1
     clearing_L1[:] = L1-L1_hh #Labor market clearing for labor type 2

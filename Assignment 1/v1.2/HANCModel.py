@@ -23,16 +23,14 @@ class HANCModelClass(EconModelClass,GEModelClass):
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
-        self.shocks = ['phi1'] # exogenous shocks
+        self.shocks = ['phi0','phi1'] # exogenous shocks
         self.unknowns = ['K','L0','L1'] # endogenous unknowns
-        # self.unknowns = ['L0', 'L1'] # endogenous unknowns (not used today)
-        self.targets = ['clearing_A','clearing_L0','clearing_L1'] # targets = 0 (not used today)
-        # self.targets = ['clearing_L1'] # targets = 0 (not used today)
+        self.targets = ['clearing_A','clearing_L0','clearing_L1'] # targets
+
 
         # d. all variables
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',
-            #'blocks.mutual_fund',
             'hh', # household block
             'blocks.market_clearing']
 
@@ -60,12 +58,15 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # c. labour productivity
         par.phi0 = 1.0 # productivity of type 0
-        #par.phi1 = 2.0 # productivity of type 1
 
         # d. production
         par.Gamma_ss = 1.0 # production function scale parameter
         par.alpha = 0.36 # capital share
         par.delta = 0.10 # depreciation rate
+
+        # e. initial distribution
+        par.chi0 = 2/3
+        par.chi1 = 1/3
 
         # f. grids         
         par.a_max = 500.0 # maximum point in grid for a
@@ -81,10 +82,6 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # h. for transition path
         par.max_iter_broyden = 100 # maximum number of iteration when solving eq. system
         par.tol_broyden = 1e-10 # tolerance when solving eq. system
-
-        # i. initial distribution
-        par.chi0 = 2/3
-        par.chi1 = 1/3
           
     def allocate(self):
         """ allocate model """
