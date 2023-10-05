@@ -9,9 +9,11 @@ from GEModelTools import lag, lead
 
 
 @nb.njit
-def production_firm(par,ini,ss,Gamma,K,L0,L1,rK,w0,w1,Y):
+def production_firm(par,ini,ss,Gamma,K,phi1,L0,L1,rK,w0,w1,Y):
 
     K_lag = lag(ini.K,K)
+    L1 = par.chi1*phi1
+    Gamma = par.Gamma_ss
 
     # a. implied prices (remember K and L are inputs)
     rK[:] = par.alpha * Gamma * K_lag**(par.alpha-1.0) *L0**((1.0-par.alpha)/2.0) * L1**((1.0-par.alpha)/2.0)

@@ -12,7 +12,7 @@ def solve_hh_backwards(par,z_trans,rK,w0,w1,phi0,phi1,vbeg_a_plus,vbeg_a,a,c,l0,
         # a. solve step
         for i_z in nb.prange(par.Nz):
 
-            l0[i_fix,i_z,:] = par.eta0_grid[i_fix] * phi0 * par.z_grid[i_z] # labor supply type 0
+            l0[i_fix,i_z,:] = par.eta0_grid[i_fix] * par.phi0 * par.z_grid[i_z] # labor supply type 0
             l1[i_fix,i_z,:] = par.eta1_grid[i_fix] * phi1 * par.z_grid[i_z]
 
             ## ii. cash-on-hand

@@ -24,9 +24,9 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # c. GE
         self.shocks = ['phi1'] # exogenous shocks
-        self.unknowns = ['K'] # endogenous unknowns
+        self.unknowns = ['K','L0','L1'] # endogenous unknowns
         # self.unknowns = ['L0', 'L1'] # endogenous unknowns (not used today)
-        self.targets = ['clearing_A'] # targets = 0 (not used today)
+        self.targets = ['clearing_A','clearing_L0','clearing_L1'] # targets = 0 (not used today)
         # self.targets = ['clearing_L1'] # targets = 0 (not used today)
 
         # d. all variables
@@ -60,7 +60,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # c. labour productivity
         par.phi0 = 1.0 # productivity of type 0
-        par.phi1 = 2.0 # productivity of type 1
+        #par.phi1 = 2.0 # productivity of type 1
 
         # d. production
         par.Gamma_ss = 1.0 # production function scale parameter
