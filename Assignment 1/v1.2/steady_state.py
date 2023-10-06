@@ -66,7 +66,7 @@ def obj_ss(K_ss,model,do_print=False):
     # a. production
     ss.Gamma = par.Gamma_ss # model user choice
     ss.A = ss.K = K_ss
-    ss.L0 = par.chi0*par.phi0 # by distribution
+    ss.L0 = par.chi0*ss.phi0 # by distribution
     ss.L1 = par.chi1*ss.phi1 # by distribution
     ss.Y = ss.Gamma*ss.K**par.alpha*ss.L0**((1-par.alpha)/2)*ss.L1**((1-par.alpha)/2)    
 

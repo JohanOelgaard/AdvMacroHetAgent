@@ -9,10 +9,11 @@ from GEModelTools import lag, lead
 
 
 @nb.njit
-def production_firm(par,ini,ss,Gamma,K,phi1,L0,L1,rK,w0,w1,Y):
+def production_firm(par,ini,ss,Gamma,K,phi0,phi1,L0,L1,rK,w0,w1,Y):
 
     # defining lagged K, L1, and Gamma
     K_lag = lag(ini.K,K)
+    L0 = par.chi0*phi0
     L1 = par.chi1*phi1
     Gamma = par.Gamma_ss
 
