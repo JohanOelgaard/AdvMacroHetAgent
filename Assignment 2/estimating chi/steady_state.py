@@ -1,5 +1,6 @@
 import time
 import numpy as np
+import numba as nb
 from scipy import optimize
 
 from consav.grids import equilogspace
@@ -40,7 +41,7 @@ def prepare_hh_ss(model):
         
         # a. raw value
         ell = 1.0
-        y = ss.wt*ell*par.z_grid
+        y = ss.wt*ell*par.z_grid+par.chi
         c = m = (1+ss.r)*par.a_grid[np.newaxis,:] + y[:,np.newaxis]
         v_a = (1+ss.r)*c**(-par.sigma)
 
@@ -63,7 +64,6 @@ def obj_ss(x,model,do_print=False):
 
     # c. government
     ss.tau = par.tau_ss
-    ss.chi = par.chi_ss
 
     # d. households
     ss.wt = (1-ss.tau)*ss.w
@@ -72,18 +72,20 @@ def obj_ss(x,model,do_print=False):
     model.simulate_hh_ss(do_print=do_print)
 
     # e. market clearing
+    ss.Lg = (ss.L_hh * ss.w*par.tau_ss-par.chi) / (ss.w+par.Gamma_G)
+    ss.G = par.Gamma_G*ss.Lg  
     ss.B = 0.0
-    ss.L = ss.L_hh
+    ss.L = ss.L_hh - ss.Lg
     ss.K = KL*ss.L
     ss.Y = par.Gamma_Y*ss.K**(par.alpha)*ss.L**(1-par.alpha)
     ss.I = par.delta*ss.K
     ss.A = ss.K + ss.B
     ss.clearing_A = ss.A - ss.A_hh
-    ss.clearing_L = ss.L - ss.L_hh
-    ss.clearing_Y = ss.Y - (ss.C_hh+ss.I)
+    ss.clearing_L = ss.L + ss.Lg - ss.L_hh
+    ss.clearing_Y = ss.Y - (ss.C_hh+ss.I+ss.G)
+
 
     return ss.clearing_A
-
 
 def find_ss(model,do_print=False):
     """ find the steady state """
@@ -118,9 +120,12 @@ def find_ss(model,do_print=False):
         print(f'{ss.B = :6.3f}')
         print(f'{ss.A_hh = :6.3f}')
         print(f'{ss.L = :6.3f}')
+        print(f'{ss.Lg = :6.3f}')
         print(f'{ss.Y = :6.3f}')
+        print(f'{ss.G = :6.3f}')
         print(f'{ss.r = :6.3f}')
         print(f'{ss.w = :6.3f}')
+        print(f'{ss.wt = :6.3f}')
         print(f'{ss.clearing_A = :.2e}')
         print(f'{ss.clearing_L = :.2e}')
         print(f'{ss.clearing_Y = :.2e}')

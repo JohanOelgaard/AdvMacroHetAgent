@@ -4,7 +4,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit
-def solve_hh_backwards(par,z_trans,wt,r,vbeg_a_plus,vbeg_a,a,c,ell,l,inc,u):
+def solve_hh_backwards(par,z_trans,wt,w,r,vbeg_a_plus,vbeg_a,a,c,ell,l,inc,u,s):
     """ solve backwards with vbeg_a_plus from previous iteration """
 
     for i_fix in range(par.Nfix):
@@ -30,7 +30,7 @@ def solve_hh_backwards(par,z_trans,wt,r,vbeg_a_plus,vbeg_a,a,c,ell,l,inc,u):
             l[i_fix,i_z,:] = ell[i_fix,i_z,:]*z
 
             # iv. saving
-            a[i_fix,i_z,:] = m_exo + wt*l[i_fix,i_z,:] - c[i_fix,i_z,:] #+ par.chi
+            a[i_fix,i_z,:] = m_exo + wt*l[i_fix,i_z,:] - c[i_fix,i_z,:] #+par.chi
 
             # v. refinement at constraint
             for i_a in range(par.Na):
@@ -46,7 +46,7 @@ def solve_hh_backwards(par,z_trans,wt,r,vbeg_a_plus,vbeg_a,a,c,ell,l,inc,u):
                     it = 0
                     while True:
 
-                        ci = (1+r)*par.a_grid[i_a] + wt*elli*z
+                        ci = (1+r)*par.a_grid[i_a] + wt*elli*z + par.chi
 
                         error = elli - fac*ci**(-par.sigma/par.nu)
                         if np.abs(error) < par.tol_ell:
@@ -67,9 +67,13 @@ def solve_hh_backwards(par,z_trans,wt,r,vbeg_a_plus,vbeg_a,a,c,ell,l,inc,u):
 
                     break
 
-        inc[i_fix] = wt*l[i_fix] + r*par.a_grid
+        s[i_fix] = par.Gamma_G*l[i_fix]*w*par.tau_ss / (w+par.Gamma_G)
+        inc[i_fix] = wt*l[i_fix] + r*par.a_grid + par.chi
         u[i_fix,:,:] = c[i_fix]**(1-par.sigma)/(1-par.sigma) - par.varphi*ell[i_fix]**(1+par.nu)/(1+par.nu)
-
+        #u[i_fix,:,:] = c[i_fix]**(1-par.sigma)/(1-par.sigma) + (G+par.S)**(1-par.omega)/(1-par.omega) - par.varphi*ell[i_fix]**(1+par.nu)/(1+par.nu)
+ 
         # b. expectation step
         v_a = c[i_fix]**(-par.sigma)
         vbeg_a[i_fix] = (1+r)*z_trans[i_fix]@v_a
+    
+       

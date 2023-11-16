@@ -17,13 +17,13 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['r','wt'] # direct inputs
+        self.inputs_hh = ['r','wt','w'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs (not used today)
-        self.outputs_hh = ['a','c','ell','l','inc','u'] # outputs
+        self.outputs_hh = ['a','c','ell','l','inc','u','s'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
-        self.shocks = [] # exogenous shocks
+        self.shocks = [] # exogenous shocks #tau and chi
         self.unknowns = ['K','L'] # endogenous unknowns
         self.targets = ['clearing_A','clearing_L'] # targets = 0
         self.blocks = [ # list of strings to block-functions
@@ -47,8 +47,10 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
         # a. preferences
         par.beta = 0.96 # discount factor
         par.sigma = 2.0 # CRRA coefficient
+        par.omega = 2.0
         par.varphi = 1.0 # dis-utility of labor
         par.nu = 1.0 # inverse Frisch elasticity of labor supply
+        par.S = 1e-8
 
         # b. income parameters
         par.rho_z = 0.96 # AR(1) parameter
@@ -64,8 +66,9 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
         par.Na = 100 # number of grid points
 
         # e. government
-        par.tau_ss = 0.00 # tax rate on wage income
-        par.chi_ss = 0.00 # lump-sum transfer
+        par.tau_ss = 0.50 # tax rate on wage income
+        par.chi = 0.00 #Lump sum transfers
+        par.Gamma_G = 1.0
 
         # e. misc.
         par.max_iter_ell = 200 # maximum number of iterations when solving for ell 
@@ -76,6 +79,8 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
         par.tol_solve = 1e-12 # tolerance when solving household problem
         par.tol_simulate = 1e-12 # tolerance when simulating household problem
         par.tol_broyden = 1e-10 # tolerance when solving eq. system
+
+        par.T = 600
 
     def allocate(self):
         """ allocate model """
