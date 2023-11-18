@@ -30,13 +30,12 @@ def mutual_fund(par,ini,ss,K,rK,A,r):
     r[:] = rK-par.delta
 
 @nb.njit
-def government(par,ini,ss,B,G,tau,Lg,L,w,wt):
+def government(par,ini,ss,B,G,Lg,L,w,wt):
  
-    tau[:] = ss.tau
     B[:] = ss.B
-    Lg[:] = (tau*w*L-par.chi)/(par.Gamma_G+w-tau*w)
+    Lg[:] = (par.tau_ss*w*L-par.chi_ss)/(par.Gamma_G+w-par.tau_ss*w)
     G[:] = par.Gamma_G*Lg
-    wt[:] = (1-tau)*w
+    wt[:] = (1-par.tau_ss)*w
     
 
 @nb.njit
