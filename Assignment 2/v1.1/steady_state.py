@@ -83,7 +83,7 @@ def obj_ss(x,model,do_print=False):
     ss.clearing_A = ss.A - ss.A_hh
     ss.clearing_L = ss.L + ss.Lg - ss.L_hh
     ss.clearing_Y = ss.Y - (ss.C_hh+ss.I+ss.G)
-    #ss.clearing_G = ss.G + ss.w*ss.Lg + par.chi_ss - ss.tau*ss.w*ss.L_hh
+    ss.clearing_G = ss.G + ss.w*ss.Lg + par.chi_ss - par.tau_ss*ss.w*ss.L_hh
 
     return ss.clearing_A
 
@@ -129,4 +129,4 @@ def find_ss(model,do_print=False):
         print(f'{ss.clearing_A = :.2e}')
         print(f'{ss.clearing_L = :.2e}')
         print(f'{ss.clearing_Y = :.2e}')
-        #print(f'{ss.clearing_G = :.2e}')
+        print(f'{ss.clearing_G = :.2e}')
