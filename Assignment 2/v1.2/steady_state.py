@@ -41,7 +41,7 @@ def prepare_hh_ss(model):
         
         # a. raw value
         ell = 1.0
-        y = ss.wt*ell*par.z_grid+par.chi_ss
+        y = ss.wt*ell*par.z_grid+ss.chi
         c = m = (1+ss.r)*par.a_grid[np.newaxis,:] + y[:,np.newaxis]
         v_a = (1+ss.r)*c**(-par.sigma)
 
@@ -63,16 +63,17 @@ def obj_ss(x,model,do_print=False):
     ss.r = ss.rK - par.delta
 
     # c. government
-    #ss.tau = par.tau_ss
+    ss.tau = par.tau_ss
+    ss.chi = par.chi_ss
 
     # d. households
-    ss.wt = (1-par.tau_ss)*ss.w
+    ss.wt = (1-ss.tau)*ss.w
     
     model.solve_hh_ss(do_print=do_print)
     model.simulate_hh_ss(do_print=do_print)
 
     # e. market clearing
-    ss.Lg = (ss.L_hh * ss.w*par.tau_ss-par.chi_ss) / (ss.w+par.Gamma_G)
+    ss.Lg = (ss.L_hh * ss.w*ss.tau-ss.chi) / (ss.w+par.Gamma_G)
     ss.G = par.Gamma_G*ss.Lg  
     ss.B = 0.0
     ss.L = ss.L_hh - ss.Lg
@@ -83,7 +84,7 @@ def obj_ss(x,model,do_print=False):
     ss.clearing_A = ss.A - ss.A_hh
     ss.clearing_L = ss.L + ss.Lg - ss.L_hh
     ss.clearing_Y = ss.Y - (ss.C_hh+ss.I+ss.G)
-    ss.clearing_G = ss.G + ss.w*ss.Lg + par.chi_ss - par.tau_ss*ss.w*ss.L_hh
+    ss.clearing_G = ss.G + ss.w*ss.Lg + ss.chi - ss.tau*ss.w*ss.L_hh
 
     return ss.clearing_A
 

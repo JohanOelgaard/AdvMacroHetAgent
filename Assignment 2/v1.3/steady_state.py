@@ -41,7 +41,7 @@ def prepare_hh_ss(model):
         
         # a. raw value
         ell = 1.0
-        y = ss.wt*ell*par.z_grid+par.chi
+        y = ss.wt*ell*par.z_grid+ss.chi
         c = m = (1+ss.r)*par.a_grid[np.newaxis,:] + y[:,np.newaxis]
         v_a = (1+ss.r)*c**(-par.sigma)
 
@@ -56,14 +56,16 @@ def obj_ss(x,model,do_print=False):
     ss = model.ss
 
     # a. firms
-    ss.rK = par.alpha*par.Gamma_Y*(KL)**(par.alpha-1)
-    ss.w = (1.0-par.alpha)*par.Gamma_Y*(KL)**par.alpha
+    ss.Gamma_Y = par.Gamma_Y
+    ss.rK = par.alpha*ss.Gamma_Y*(KL)**(par.alpha-1)
+    ss.w = (1.0-par.alpha)*ss.Gamma_Y*(KL)**par.alpha
 
     # b. arbitrage
     ss.r = ss.rK - par.delta
 
     # c. government
     ss.tau = par.tau_ss
+    ss.chi = par.chi_ss
 
     # d. households
     ss.wt = (1-ss.tau)*ss.w
@@ -72,18 +74,18 @@ def obj_ss(x,model,do_print=False):
     model.simulate_hh_ss(do_print=do_print)
 
     # e. market clearing
-    ss.Lg = (ss.L_hh * ss.w*par.tau_ss-par.chi) / (ss.w+par.Gamma_G)
+    ss.Lg = (ss.L_hh * ss.w*ss.tau-ss.chi) / (ss.w+par.Gamma_G)
     ss.G = par.Gamma_G*ss.Lg  
     ss.B = 0.0
     ss.L = ss.L_hh - ss.Lg
     ss.K = KL*ss.L
-    ss.Y = par.Gamma_Y*ss.K**(par.alpha)*ss.L**(1-par.alpha)
+    ss.Y = ss.Gamma_Y*ss.K**(par.alpha)*ss.L**(1-par.alpha)
     ss.I = par.delta*ss.K
     ss.A = ss.K + ss.B
     ss.clearing_A = ss.A - ss.A_hh
     ss.clearing_L = ss.L + ss.Lg - ss.L_hh
     ss.clearing_Y = ss.Y - (ss.C_hh+ss.I+ss.G)
-
+    ss.clearing_G = ss.G + ss.w*ss.Lg + ss.chi - ss.tau*ss.w*ss.L_hh
 
     return ss.clearing_A
 
@@ -94,9 +96,9 @@ def find_ss(model,do_print=False):
 
     par = model.par
     ss = model.ss
-
-    KL_min = ((1/par.beta+par.delta-1)/(par.alpha*par.Gamma_Y))**(1/(par.alpha-1)) + 1e-2
-    KL_max = (par.delta/(par.alpha*par.Gamma_Y))**(1/(par.alpha-1))-1e-2
+    #suppes it should be ss.Gamma_Y here
+    KL_min = ((1/par.beta+par.delta-1)/(par.alpha*ss.Gamma_Y))**(1/(par.alpha-1)) + 1e-2
+    KL_max = (par.delta/(par.alpha*ss.Gamma_Y))**(1/(par.alpha-1))-1e-2
     KL_mid = (KL_min+KL_max)/2 # middle point between max values as initial capital labor ratio
 
     # a. solve for K and L
@@ -129,3 +131,4 @@ def find_ss(model,do_print=False):
         print(f'{ss.clearing_A = :.2e}')
         print(f'{ss.clearing_L = :.2e}')
         print(f'{ss.clearing_Y = :.2e}')
+        print(f'{ss.clearing_G = :.2e}')

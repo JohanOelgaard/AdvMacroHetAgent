@@ -17,13 +17,13 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['r','wt','w'] # direct inputs
+        self.inputs_hh = ['r','wt','w','tau','chi','Gamma_Y'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs (not used today)
         self.outputs_hh = ['a','c','ell','l','inc','u','s'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
-        self.shocks = [] # exogenous shocks #tau and chi
+        self.shocks = ['tau','chi','Gamma_Y'] # exogenous shocks #tau and chi
         self.unknowns = ['K','L'] # endogenous unknowns
         self.targets = ['clearing_A','clearing_L'] # targets = 0
         self.blocks = [ # list of strings to block-functions
@@ -66,8 +66,8 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
         par.Na = 100 # number of grid points
 
         # e. government
-        par.tau_ss = 0.50 # tax rate on wage income
-        par.chi = 0.00 #Lump sum transfers
+        par.tau_ss = 0.00 # tax rate on wage income
+        par.chi_ss = 0.00 #Lump sum transfers
         par.Gamma_G = 1.0
 
         # e. misc.
@@ -79,8 +79,6 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
         par.tol_solve = 1e-12 # tolerance when solving household problem
         par.tol_simulate = 1e-12 # tolerance when simulating household problem
         par.tol_broyden = 1e-10 # tolerance when solving eq. system
-
-        par.T = 600
 
     def allocate(self):
         """ allocate model """
