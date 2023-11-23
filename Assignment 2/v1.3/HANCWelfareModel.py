@@ -46,11 +46,11 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
 
         # a. preferences
         par.beta = 0.96 # discount factor
-        par.sigma = 2.0 # CRRA coefficient
-        par.omega = 2.0
+        par.sigma = 2.0 # CRRA coefficient of consumption
+        par.omega = 2.0 # CRRA coefficient of public spending
         par.varphi = 1.0 # dis-utility of labor
         par.nu = 1.0 # inverse Frisch elasticity of labor supply
-        par.S = 1e-8
+        par.S = 1e-8 # utility from 0 actual public spending
 
         # b. income parameters
         par.rho_z = 0.96 # AR(1) parameter
@@ -58,6 +58,7 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
 
         # c. production and investment
         par.Gamma_Y = 1.0 # technology level
+        par.Gamma_G = 1.0 # goverment technology level
         par.alpha = 0.30 # cobb-douglas coefficient
         par.delta = 0.10 # depreciation rate
 
@@ -68,7 +69,6 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
         # e. government
         par.tau_ss = 0.00 # tax rate on wage income
         par.chi_ss = 0.00 #Lump sum transfers
-        par.Gamma_G = 1.0
 
         # e. misc.
         par.max_iter_ell = 200 # maximum number of iterations when solving for ell 
@@ -89,3 +89,4 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
 
     prepare_hh_ss = steady_state.prepare_hh_ss
     find_ss = steady_state.find_ss
+    optimize_social_welfare = steady_state.optimize_social_welfare

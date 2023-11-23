@@ -70,8 +70,7 @@ def solve_hh_backwards(par,z_trans,wt,w,r,vbeg_a_plus,vbeg_a,a,c,ell,l,inc,u,s,t
         s[i_fix] = par.Gamma_G*l[i_fix]*w*tau / (w+par.Gamma_G)
         inc[i_fix] = wt*l[i_fix] + r*par.a_grid + chi
         u[i_fix,:,:] = c[i_fix]**(1-par.sigma)/(1-par.sigma) - par.varphi*ell[i_fix]**(1+par.nu)/(1+par.nu)
-        #u[i_fix,:,:] = c[i_fix]**(1-par.sigma)/(1-par.sigma) + (G+par.S)**(1-par.omega)/(1-par.omega) - par.varphi*ell[i_fix]**(1+par.nu)/(1+par.nu) #with government
- 
+        
         # b. expectation step
         v_a = c[i_fix]**(-par.sigma)
         vbeg_a[i_fix] = (1+r)*z_trans[i_fix]@v_a

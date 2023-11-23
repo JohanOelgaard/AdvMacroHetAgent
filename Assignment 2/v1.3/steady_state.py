@@ -132,3 +132,70 @@ def find_ss(model,do_print=False):
         print(f'{ss.clearing_L = :.2e}')
         print(f'{ss.clearing_Y = :.2e}')
         print(f'{ss.clearing_G = :.2e}')
+
+
+def optimize_social_welfare(model,tau_guess,chi_guess=np.NaN,do_print=False):
+    """ optimizer for social welfare based on taxes and chi"""
+    par = model.par
+    ss = model.ss
+    # a. guess
+    tau = tau_guess
+    if np.isnan(chi_guess): #setting chi to 0 if no guess is given
+        chi = 0.0
+    else:
+        chi = chi_guess
+    
+    # b. setup objective function
+    def obj(tau,chi,model):
+        """ objective function for social welfare maximization """
+
+        par = model.par
+        ss = model.ss
+
+        par.tau_ss = tau
+        par.chi_ss = chi
+    
+        model.find_ss()
+        return -np.sum([par.beta**t * ((np.sum((ss.u+(ss.G+par.S)**(1-par.omega)/(1-par.omega)) * ss.D / (np.sum(ss.D))))) for t in range(par.T)])
+    
+    # c. solve
+    t0 = time.time()
+    if np.isnan(chi_guess): #implicitly it assumes that when no guess is given for chi, we are only optimizing for tau
+        res = optimize.minimize_scalar(obj,args=(chi,model),bounds=[0.0,0.99],method='bounded')
+        par.tau_ss = res.x
+    else:
+        res = optimize.minimize(lambda x: obj(x[0],x[1],model),x0=[tau,chi],method='Nelder-Mead')
+        par.tau_ss = res.x[0]
+        par.chi_ss = res.x[1]
+    
+    # d. final evaluation
+    model.find_ss()
+
+    # e. print
+    print(f'Optimal taxes found in {elapsed(t0)}')
+    if do_print:
+        #print tau and chi values
+        print(f'Optimal wage tax: {ss.tau = :6.3f}')
+        print(f'Optimal lump sum transfer: {ss.chi = :6.3f}')
+        #print ss values
+        print('')
+        print('Steady state values')
+        print(f'{ss.K = :6.3f}')
+        print(f'{ss.B = :6.3f}')
+        print(f'{ss.A_hh = :6.3f}')
+        print(f'{ss.L = :6.3f}')
+        print(f'{ss.Lg = :6.3f}')
+        print(f'{ss.Y = :6.3f}')
+        print(f'{ss.G = :6.3f}')
+        print(f'{ss.r = :6.3f}')
+        print(f'{ss.w = :6.3f}')
+        print(f'{ss.wt = :6.3f}')
+        print(f'{ss.clearing_A = :.2e}')
+        print(f'{ss.clearing_L = :.2e}')
+        print(f'{ss.clearing_Y = :.2e}')
+        print(f'{ss.clearing_G = :.2e}')
+
+    return par.tau_ss, par.chi_ss
+        
+
+
