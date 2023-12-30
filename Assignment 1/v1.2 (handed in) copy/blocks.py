@@ -15,7 +15,6 @@ def production_firm(par,ini,ss,Gamma,K,phi0,phi1,L0,L1,rK,w0,w1,Y):
     K_lag = lag(ini.K,K)
     L0 = par.chi0*phi0
     L1 = par.chi1*phi1
-    Gamma = par.Gamma_ss
 
     # a. implied prices (remember K and L are inputs)
     rK[:] = par.alpha * Gamma * K_lag**(par.alpha-1.0) *L0**((1.0-par.alpha)/2.0) * L1**((1.0-par.alpha)/2.0)
@@ -34,5 +33,5 @@ def market_clearing(par,ini,ss,A,A_hh,L0,L0_hh,L1,L1_hh,Y,C_hh,K,I,clearing_A,cl
     clearing_A[:] = K-A_hh #Asset market clearing
     clearing_L0[:] = L0-L0_hh #Labor market clearing for labor type 1
     clearing_L1[:] = L1-L1_hh #Labor market clearing for labor type 2
-    I = K-(1-par.delta)*lag(ini.K,K) #Law of motion for capital
+    I[:] = K-(1-par.delta)*lag(ini.K,K) #Law of motion for capital
     clearing_Y[:] = Y-C_hh-I #Goods market clearing
