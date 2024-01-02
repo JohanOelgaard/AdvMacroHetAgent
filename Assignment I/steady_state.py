@@ -52,6 +52,7 @@ def prepare_hh_ss(model):
     # a. raw value
     y = par.z_grid
     c = m = (1+ss.rK-par.delta) * par.a_grid[np.newaxis,:] + y[:,np.newaxis]
+    u = c**(1-par.sigma)/(1-par.sigma) - par.nu
     v_a = (1+ss.rK-par.delta) * c**(-par.sigma)
 
     # b. expectation
