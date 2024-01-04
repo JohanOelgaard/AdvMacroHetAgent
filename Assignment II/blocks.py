@@ -44,5 +44,5 @@ def market_clearing(par,ini,ss,A,A_hh,L,Lg,L_hh,Y,C_hh,K,I,G,w,tau,chi,clearing_
     clearing_A[:] = A-A_hh
     clearing_L[:] = L+Lg-L_hh
     I[:] = K-(1-par.delta)*lag(ini.K,K)
-    clearing_Y[:] = Y-C_hh-I
+    clearing_Y[:] = Y-C_hh-I-G
     clearing_G[:] = G+w*Lg+chi-tau*w*L_hh

@@ -119,7 +119,6 @@ def find_ss(model,do_print=False):
 
         print(f'steady state found in {elapsed(t0)}')
         print(f'{ss.K = :6.3f}')
-        #print(f'{ss.B = :6.3f}')
         print(f'{ss.A_hh = :6.3f}')
         print(f'{ss.Y = :6.3f}')
         print(f'{ss.C_hh = :6.3f}')
@@ -184,7 +183,6 @@ def optimize_social_welfare(model,tau_guess,chi_guess=np.NaN,do_print=False):
         print('Steady state values with optimized tax levels')
         print(f'{ss.K = :6.3f}')
         print(f'{ss.A_hh = :6.3f}')
-        #print(f'{ss.B = :6.3f}')
         print(f'{ss.Y = :6.3f}')
         print(f'{ss.C_hh = :6.3f}')
         print(f'{ss.G = :6.3f}')
