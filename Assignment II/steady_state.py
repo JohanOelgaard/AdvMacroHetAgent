@@ -124,6 +124,7 @@ def find_ss(model,do_print=False):
         print(f'{ss.C_hh = :6.3f}')
         print(f'{ss.G = :6.3f}')
         print(f'{ss.I = :6.3f}')
+        print(f'{ss.L_hh = :6.3f}')
         print(f'{ss.L = :6.3f}')
         print(f'{ss.Lg = :6.3f}')
         print(f'{ss.r = :6.3f}')
@@ -189,7 +190,7 @@ def optimize_social_welfare(model,tau_guess,chi_guess=np.NaN,do_print=False):
     print(f'Optimal taxes found in {elapsed(t0)}')
     if do_print:
         #print tau and chi values
-        print(f'Expected utility: {res.fun = :6.4f}')
+        print(f'Expected utility: {-res.fun = :6.4f}')
         print(f'Optimal wage tax: {ss.tau = :6.4f}')
         print(f'Optimal lump sum transfer: {ss.chi = :6.4f}')
         
@@ -202,6 +203,7 @@ def optimize_social_welfare(model,tau_guess,chi_guess=np.NaN,do_print=False):
         print(f'{ss.C_hh = :6.3f}')
         print(f'{ss.G = :6.3f}')
         print(f'{ss.I = :6.3f}')
+        print(f'{ss.L_hh = :6.3f}')
         print(f'{ss.L = :6.3f}')
         print(f'{ss.Lg = :6.3f}')
         print(f'{ss.r = :6.3f}')

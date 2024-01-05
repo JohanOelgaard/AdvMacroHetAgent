@@ -1,7 +1,3 @@
-# Model analysis project
+# Assignment III
 
-Our project is titled **PROJECT TITLE** and is about EXPLAIN.
-
-The **results** of the project can be seen from running [modelproject.ipynb](modelproject.ipynb).
-
-**Dependencies:** Apart from a standard Anaconda Python 3 installation, the project requires no further packages.
+The **idea** for an extension to the model from assigment 2 can be found in the file [Adv__Macro_Assignment_3](Adv__Macro_Assignment_3.pdf).

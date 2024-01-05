@@ -1,3 +1,4 @@
-# Assignment III
+# Assignment I
 
-The **idea** for an extension to the model from assigment 2 can be found in the file [Adv__Macro_Assignment_3](Adv__Macro_Assignment_3.pdf).
+The **results** of the project can be seen from running [HANCAssignment.ipynb](HANCAssingment.ipynb).
+Answers to the questions are can be found in the file [Assignment_II](Assignment_II.pdf).
