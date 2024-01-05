@@ -90,3 +90,4 @@ class HANCWelfareModelClass(EconModelClass,GEModelClass):
     prepare_hh_ss = steady_state.prepare_hh_ss
     find_ss = steady_state.find_ss
     optimize_social_welfare = steady_state.optimize_social_welfare
+    exp_util = steady_state.exp_util

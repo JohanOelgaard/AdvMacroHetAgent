@@ -135,6 +135,17 @@ def find_ss(model,do_print=False):
         print(f'{ss.clearing_G = :.2e}')
 
 
+def exp_util(model):
+    """ calculate expected utility """
+
+    par = model.par
+    ss = model.ss
+    
+    # find expected utility
+    util = np.sum([par.beta**t * ((np.sum((ss.u+(ss.G+par.S)**(1-par.omega)/(1-par.omega)) * ss.D / (np.sum(ss.D))))) for t in range(par.T)])
+    
+    return util
+
 def optimize_social_welfare(model,tau_guess,chi_guess=np.NaN,do_print=False):
     """ optimizer for social welfare based on taxes and chi"""
     par = model.par
@@ -157,7 +168,9 @@ def optimize_social_welfare(model,tau_guess,chi_guess=np.NaN,do_print=False):
         par.chi_ss = chi
     
         model.find_ss()
-        return -np.sum([par.beta**t * ((np.sum((ss.u+(ss.G+par.S)**(1-par.omega)/(1-par.omega)) * ss.D / (np.sum(ss.D))))) for t in range(par.T)])
+        val = model.exp_util()
+
+        return -val
     
     # c. solve
     t0 = time.time()
@@ -176,8 +189,10 @@ def optimize_social_welfare(model,tau_guess,chi_guess=np.NaN,do_print=False):
     print(f'Optimal taxes found in {elapsed(t0)}')
     if do_print:
         #print tau and chi values
+        print(f'Expected utility: {res.fun = :6.4f}')
         print(f'Optimal wage tax: {ss.tau = :6.4f}')
         print(f'Optimal lump sum transfer: {ss.chi = :6.4f}')
+        
         #print ss values
         print('')
         print('Steady state values with optimized tax levels')
@@ -198,6 +213,6 @@ def optimize_social_welfare(model,tau_guess,chi_guess=np.NaN,do_print=False):
         print(f'{ss.clearing_G = :.2e}')
 
     return par.tau_ss, par.chi_ss
-        
+
 
 
