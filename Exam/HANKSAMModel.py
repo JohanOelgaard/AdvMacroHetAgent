@@ -24,13 +24,13 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a']
         self.pols_hh = ['a']
-        self.inputs_hh = ['w','r','tau','div','transfer']
+        self.inputs_hh = ['w','r','tau','div','transfer','u_bar']
         self.inputs_hh_z = ['delta','lambda_u_s']
         self.outputs_hh = ['a','c','u_ALL','u_UI']
         self.intertemps_hh = ['vbeg_a']
 
         # c. GE
-        self.shocks = ['G']
+        self.shocks = ['G','u_bar']
         
         self.unknowns = ['px',
                          'Vj',
@@ -106,7 +106,7 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
         par.tau_ss = 0.30 # tax rate in steady state
         par.phi_obar = 0.70 # high unemployment insurance
         par.phi_ubar = 0.40 # low unemployment insurance
-        par.u_bar_ss = 6.0 # max duration for high unemployment insurance
+        #par.u_bar_ss = 6.0 # max duration for high unemployment insurance
         
         par.delta_q = 1-1/36 # maturity of government bonds
         par.omega = 0.05 # responsiveness of tax to debt

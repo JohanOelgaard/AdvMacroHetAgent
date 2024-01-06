@@ -6,7 +6,7 @@ from consav.linear_interp import interp_1d_vec
 @nb.njit
 def solve_hh_backwards(par,z_trans,
     delta,lambda_u_s,w,r,tau,div,transfer,
-    vbeg_a_plus,vbeg_a,a,c,u_ALL,u_UI,ss=False):
+    vbeg_a_plus,vbeg_a,a,c,u_ALL,u_UI,u_bar,ss=False):
 
     s = np.zeros_like(a)
     
@@ -22,7 +22,7 @@ def solve_hh_backwards(par,z_trans,
                 yt = w
                 u_ALL[i_fix,i_z,:] = 0.0
             else:
-                u_UI_ = np.fmax(np.fmin(par.u_bar_ss-(i_u-1),1.0),0.0)
+                u_UI_ = np.fmax(np.fmin(u_bar-(i_u-1),1.0),0.0)
                 yt = (u_UI_*par.phi_obar + (1-u_UI_)*par.phi_ubar)*w
                 u_ALL[i_fix,i_z,:] = 1.0
 
