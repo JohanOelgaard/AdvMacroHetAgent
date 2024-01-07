@@ -222,8 +222,8 @@ def fiscal_multiplier(model,type='Y',print_frac=False):
     multiplier = nominator/denominator
 
     if print_frac:
-        print(f'{nominator = :6.4f}')
-        print(f'{denominator = :6.4f}')
+        print(f'{nominator = :6.8f}')
+        print(f'{denominator = :6.8f}')
     
     print(f'{multiplier = :6.4f}')
 
