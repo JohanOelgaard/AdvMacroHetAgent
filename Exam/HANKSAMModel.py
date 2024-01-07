@@ -68,6 +68,9 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
         """ set baseline parameters """
 
         par = self.par
+
+        par.RA = False # representative agent
+        
         par.Nfix = 3 # number of household types
 
         # a. consumption-saving
@@ -76,6 +79,7 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
         par.beta_HtM = 0.0 # discount factor of HtM households
         par.beta_BS = 0.940**(1/12) # discount factor of buffer-stock households
         par.beta_PIH = 0.975**(1/12) # discount factor of permanent income hypothethis households
+        par.beta_RA = np.nan # discount factor of representative agent set in ss
         par.beta_firm = 0.975**(1/12) # discount factor of firms
 
         par.HtM_share = 0.30 # share of HtM households
@@ -106,7 +110,6 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
         par.tau_ss = 0.30 # tax rate in steady state
         par.phi_obar = 0.70 # high unemployment insurance
         par.phi_ubar = 0.40 # low unemployment insurance
-        #par.u_bar_ss = 6.0 # max duration for high unemployment insurance
         
         par.delta_q = 1-1/36 # maturity of government bonds
         par.omega = 0.05 # responsiveness of tax to debt
@@ -159,36 +162,18 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
     prepare_hh_ss = steady_state.prepare_hh_ss
     find_ss = steady_state.find_ss
         
-    def calc_Cs(self,i_fix=None):
-        """ calculate consumption """
-
-        par = self.par
-        ss = self.ss
-
-        if i_fix is None:
-            i = 0
-            j = par.Nfix
-        else:
-            i = i_fix
-            j = i + 1
-        
-        C_u_dur = np.nan*np.ones(par.Nu)
-
-        if np.sum(ss.D[i:j]) > 0.0:
-
-            C_e = np.sum(ss.D[i:j,0,:]*ss.c[i:j,0,:])/np.sum(ss.D[i:j,0,:])
-            C_u = np.sum(ss.D[i:j,1:,:]*ss.c[i:j,1:,:])/np.sum(ss.D[i:j,1:,:])
-
-            for i_z in range(par.Nz):
-
-                i_u = par.i_u_hh[i:j,i_z]
-                C_u_dur[int(i_u[0]-1)] = np.sum(ss.D[i:j,i_z,:]*ss.c[i:j,i_z,:])/np.sum(ss.D[i:j,i_z,:])
-        
-        else:
-
-            C_e = np.nan
-            C_u = np.nan
-
-        return C_e,C_u,C_u_dur
-
     fiscal_multiplier = steady_state.fiscal_multiplier
+
+# Reperesentative agent model
+class RANKSAMModelClass(HANKSAMModelClass):
+
+    # same settings
+    # same allocate 
+
+    def setup(self):
+
+        super().setup() # calls setup from HANKModelClass
+        self.par.RA = True
+
+    # note: the heterogenous households are still there, but does not matter for transition path
+    # this is a simple though not computationally efficient implementation

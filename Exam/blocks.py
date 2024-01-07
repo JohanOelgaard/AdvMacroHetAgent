@@ -103,16 +103,24 @@ def government(par,ini,ss,G,U_UI_hh_guess,w,u,q,Phi,transfer,X,taut,tau,taxes,B)
     
 @nb.njit
 def market_clearing(par,ini,ss,G,TFP,pi,i,C_hh,u,q,B,U_ALL_hh,U_UI_hh_guess,U_UI_hh,
-                    Y,clearing_Y,qB,A_hh,errors_assets,errors_U,errors_U_UI):
+                    Y,clearing_Y,qB,A_hh,r,errors_assets,errors_U,errors_U_UI):
 
     Y[:] = TFP*(1-u)
 
     # a. asset market clearing
     qB[:] = q*B
-    errors_assets[:] = qB-A_hh
 
-    # b. goods market clearing
-    clearing_Y[:] = Y - (C_hh + G)
+    if par.RA:
+        C = Y-G # derive consumption from ressource constraint
+        C_plus = lead(C,ss.C_hh)
+        r_plus = lead(r,ss.r)
+
+        errors_assets[:] = C**(-par.sigma) - par.beta_RA*(1+r_plus)*C_plus**(-par.sigma)
+        clearing_Y[:] = 0.0 # from using ressource constraint
+    
+    else:
+        errors_assets[:] = qB-A_hh
+        clearing_Y[:] = Y - (C_hh + G)
 
     # c. final targets
     errors_U[:] = u-U_ALL_hh

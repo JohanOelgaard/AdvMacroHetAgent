@@ -48,6 +48,10 @@ def prepare_hh_ss(model):
     ############
 
     # a. beta
+    # if par.RA: # RANKSAM
+    #     par.beta_grid = np.ones(par.Nfix)*par.beta_RA
+    #     par.beta_shares = np.ones(par.Nfix)
+    # else: # HANKSAM
     par.beta_grid[0] = par.beta_HtM
     par.beta_grid[1] = par.beta_BS
     par.beta_grid[2] = par.beta_PIH 
@@ -57,7 +61,7 @@ def prepare_hh_ss(model):
     par.beta_shares[0] = par.HtM_share
     par.beta_shares[1] = 1-par.HtM_share-par.PIH_share
     par.beta_shares[2] = par.PIH_share
-    
+        
     # b. a
     par.a_grid[:] = equilogspace(0.0,par.a_max,par.Na)
 
@@ -200,24 +204,34 @@ def find_ss_HANK(model,do_print=False):
     # f. G shock
     par.jump_G = 0.01*ss.G
 
+    # RA - with same steady state
+    par.beta_RA = 1/(1+ss.r)
+
     if do_print:
 
         print(f'{ss.G = :6.4f}')
         print(f'{ss.clearing_Y = :6.4f}')     
         print(f'{par.jump_G = :6.4f}')
 
-def fiscal_multiplier(model,type='Y',print_frac=False):
+def fiscal_multiplier(model,nom='Y',denom='taxes',print_frac=False):
     par = model.par
     ss = model.ss
 
-    denominator = np.sum([((model.path.taxes[t]-ss.taxes)/(1+ss.r)**t) for t in range(par.T)])
     
-    if type == 'Y':
+    if nom == 'Y':
         nominator = np.sum([((model.path.Y[t]-ss.Y)/(1+ss.r)**t) for t in range(par.T)])
-    elif type == 'C_hh':
+    elif nom == 'C_hh':
         nominator = np.sum([((model.path.C_hh[t]-ss.C_hh)/(1+ss.r)**t) for t in range(par.T)])
     else:
-        return ValueError('type must be Y or C_hh')
+        return ValueError('nominator must be Y or C_hh')
+
+
+    if denom == 'taxes':
+        denominator = np.sum([((model.path.taxes[t]-ss.taxes)/(1+ss.r)**t) for t in range(par.T)])
+    elif denom == 'G':
+        denominator = np.sum([((model.path.G[t]-ss.G)/(1+ss.r)**t) for t in range(par.T)])
+    else:
+        return ValueError('denominator must be taxes or G')
 
     multiplier = nominator/denominator
 

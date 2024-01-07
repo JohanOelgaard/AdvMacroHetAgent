@@ -77,6 +77,9 @@ def financial_market(par,ini,ss,pi,i,q,r):
         q[t] = (1+par.delta_q*q_plus)/R_plus[t]
 
     # b. real interest rate (ex post)
+    # if par.RA:
+    #     r[0] = R_plus[0] - 1
+    # else:
     r[0] = (1+par.delta_q*q[0])*ini.B/ini.A_hh - 1
     r[1:] = R_plus[:-1] - 1
 
@@ -103,16 +106,28 @@ def government(par,ini,ss,G,U_UI_hh_guess,w,u,q,Phi,transfer,X,taut,tau,taxes,B)
     
 @nb.njit
 def market_clearing(par,ini,ss,G,TFP,pi,i,C_hh,u,q,B,U_ALL_hh,U_UI_hh_guess,U_UI_hh,
-                    Y,clearing_Y,qB,A_hh,errors_assets,errors_U,errors_U_UI):
+                    Y,clearing_Y,qB,r,A_hh,errors_assets,errors_U,errors_U_UI):
 
     Y[:] = TFP*(1-u)
 
     # a. asset market clearing
     qB[:] = q*B
-    errors_assets[:] = qB-A_hh
 
-    # b. goods market clearing
-    clearing_Y[:] = Y - (C_hh + G)
+    if par.RA:
+        C = Y-G
+        C_plus = lead(C,ss.C_hh)
+        r_plus = lead(r,ss.r)
+
+        clearing_Y[:] = 0.0
+        errors_assets[:] = C**(-par.sigma) - par.beta_RA*(1+r_plus)*C_plus**(-par.sigma)
+
+    else:
+        clearing_Y[:] = Y - (C_hh + G)
+        errors_assets[:] = qB-A_hh
+
+    # # b. goods market clearing
+    # clearing_Y[:] = Y - (C_hh + G)
+    # errors_assets[:] = qB-A_hh
 
     # c. final targets
     errors_U[:] = u-U_ALL_hh

@@ -9,7 +9,7 @@ from GEModelTools import GEModelClass
 import household_problem
 import steady_state
 
-class HANKSAMModelClass(EconModelClass,GEModelClass):    
+class RANKSAMModelClass(EconModelClass,GEModelClass):    
 
     #########
     # setup #
@@ -69,21 +69,21 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
 
         par = self.par
         
-        par.RA = False
+        par.RA = True # representative agent
 
-        par.Nfix = 3 # number of household types
+        par.Nfix = 1 # number of household types
 
         # a. consumption-saving
         par.r_ss = 1.02**(1/12) - 1 # real interest rate in steady state
 
-        par.beta_HtM = 0.0 # discount factor of HtM households
-        par.beta_BS = 0.940**(1/12) # discount factor of buffer-stock households
-        par.beta_PIH = 0.975**(1/12) # discount factor of permanent income hypothethis households
+        #par.beta_HtM = 0.0 # discount factor of HtM households
+        #par.beta_BS = 0.940**(1/12) # discount factor of buffer-stock households
+        #par.beta_PIH = 0.975**(1/12) # discount factor of permanent income hypothethis households
         par.beta_firm = 0.975**(1/12) # discount factor of firms
         par.beta_RA = np.nan # discount factor for representative agent
 
-        par.HtM_share = 0.30 # share of HtM households
-        par.PIH_share = 0.10 # share of PIH households
+        #par.HtM_share = 0.30 # share of HtM households
+        #par.PIH_share = 0.10 # share of PIH households
         # the share of buffer-stock households is the residual 1-par.HtM_share-par.PIH_share
         
         par.sigma = 2.0 # CRRA coefficient
@@ -137,7 +137,7 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
 
         par.py_hh = False
         par.py_blocks = False
-        par.full_z_trans = True
+        par.full_z_trans = True # should this be changed?
 
     def allocate(self):
         """ allocate model """
@@ -196,40 +196,3 @@ class HANKSAMModelClass(EconModelClass,GEModelClass):
         return C_e,C_u,C_u_dur
 
     fiscal_multiplier = steady_state.fiscal_multiplier
-
-class RANKSAMModelClass(HANKSAMModelClass):
-
-    # same settings
-    # same allocate 
-
-    def setup(self):
-
-        super().setup() # calls setup from HANKModelClass
-        self.par.RA = True
-        # self.par.Nfix = 1
-    
-    def allocate(self):
-        """ allocate model """
-        
-        self.create_grids()
-        self.allocate_GE()
-
-    def create_grids(self):
-        """ create grids """
-
-        par = self.par
-
-        # a. z
-        par.Nz = par.Nu+1
-
-        par.i_u_hh = np.zeros((par.Nfix,par.Nz))
-        par.i_u_hh[:,1:] = np.arange(1,par.Nu+1)
-
-        # b. beta
-        par.beta_grid = np.nan*np.ones(par.Nfix)
-        par.beta_shares = np.nan*np.ones(par.Nfix)
-
-    prepare_hh_ss = steady_state.prepare_hh_ss
-    find_ss = steady_state.find_ss
-    # note: the heterogenous households are still there, but does not matter for transition path
-    # this is a simple though not computationally efficient implementation
