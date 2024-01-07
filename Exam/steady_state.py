@@ -206,7 +206,7 @@ def find_ss_HANK(model,do_print=False):
         print(f'{ss.clearing_Y = :6.4f}')     
         print(f'{par.jump_G = :6.4f}')
 
-def fiscal_multiplier(model,type='Y'):
+def fiscal_multiplier(model,type='Y',print_frac=False):
     par = model.par
     ss = model.ss
 
@@ -221,7 +221,10 @@ def fiscal_multiplier(model,type='Y'):
 
     multiplier = nominator/denominator
 
-
+    if print_frac:
+        print(f'{nominator = :6.4f}')
+        print(f'{denominator = :6.4f}')
+    
     print(f'{multiplier = :6.4f}')
 
     return multiplier
