@@ -1,4 +1,4 @@
-# Assignments in Advanced Macroeconomics: Heterogeneous Agent Models
+# Assignments and Final Exam in Advanced Macroeconomics: Heterogeneous Agent Models
 
 **By Johan Ølgaard, jlh601**
 
