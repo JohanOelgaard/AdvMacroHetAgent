@@ -1,4 +1,5 @@
-# Assignments and Final Exam in the course Advanced Macroeconomics: Heterogeneous Agent Models Fall 2023, University of Copenhagen
+# Advanced Macroeconomics
+Assignments and Final Exam in the course Advanced Macroeconomics: Heterogeneous Agent Models Fall 2023, University of Copenhagen
 
 **By Johan Ølgaard, jlh601**
 
